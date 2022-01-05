@@ -12,7 +12,7 @@ from logging import getLogger
 import pykka
 from mopidy import core as mopidy_core
 
-from .threads import GPIOHandler, TagReader
+from .threads import GPIOHandler, TagReaderRDM6300
 
 
 LOGGER = getLogger(__name__)

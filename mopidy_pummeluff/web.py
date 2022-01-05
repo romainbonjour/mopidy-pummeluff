@@ -17,7 +17,7 @@ from tornado.web import RequestHandler
 
 from mopidy_pummeluff.registry import REGISTRY
 from mopidy_pummeluff.actions import ACTIONS
-from mopidy_pummeluff.threads import TagReader
+from mopidy_pummeluff.threads import TagReaderRDM6300
 
 LOGGER = getLogger(__name__)
 
