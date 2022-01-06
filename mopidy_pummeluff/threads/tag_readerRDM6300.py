@@ -25,11 +25,11 @@ class RFID(rdm6300.BaseReader):
         '''
         Class constructor.
         '''
-        super().__init__(self, port, heartbeat_interval):
+        super().__init__(port, heartbeat_interval)
         self.core       = core
     
     def card_inserted(self, card):
-        LOGGER.info('card inserted: {card}', card)
+        LOGGER.info('card inserted: {card}'.format(card=card))
         '''
         Handle the scanned tag / retreived UID.
 
@@ -51,7 +51,7 @@ class RFID(rdm6300.BaseReader):
         TagReader.latest = action
 
     def card_removed(self, card):
-        LOGGER.info('card removed: {card}', card)
+        LOGGER.info('card removed: {card}'.format(card=card))
         action=Stop
         action(self.core)
 
@@ -100,11 +100,11 @@ class TagReader(Thread):
                 recieved_byte = received_bytes[0]
                 assert len(received_bytes) == 1
 
-                if recieved_byte == BaseReader._RFID_STARTCODE:
+                if recieved_byte == rfid._RFID_STARTCODE:
                     if len(rfid.current_fragment) > 0:
                         rfid._process_fragment(rfid.current_fragment)
                         rfid.current_fragment = []
-                elif recieved_byte == BaseReader._RFID_ENDCODE:
+                elif recieved_byte == rfid._RFID_ENDCODE:
                     if len(rfid.current_fragment) > 0:
                         rfid._process_fragment(rfid.current_fragment)
                         rfid.current_fragment = []
