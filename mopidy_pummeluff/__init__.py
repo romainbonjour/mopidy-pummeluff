@@ -56,6 +56,7 @@ class Extension(mopidy.ext.Extension):
         :return: The config schema
         '''
         schema = super(Extension, self).get_config_schema()
+        schema["RFIDReader"] = config.String(optional=True)
         return schema
 
     def setup(self, registry):

@@ -31,7 +31,7 @@ class GPIOHandler(Thread):
         37: NextTrack,
     }
 
-    led_pin = 8
+    led_pin = 16
 
     def __init__(self, core, stop_event):
         '''

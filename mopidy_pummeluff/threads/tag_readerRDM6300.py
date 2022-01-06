@@ -15,19 +15,27 @@ import rdm6300
 
 from mopidy_pummeluff.registry import REGISTRY
 from mopidy_pummeluff.actions.base import Action
+from mopidy_pummeluff.actions import Stop 
 from mopidy_pummeluff.sound import play_sound
 
 LOGGER = getLogger(__name__)
 
 class RFID(rdm6300.BaseReader):
+    def __init__(self, core, port='/dev/ttyS0', heartbeat_interval=0.5):
+        '''
+        Class constructor.
+        '''
+        super().__init__(self, port, heartbeat_interval):
+        self.core       = core
+    
     def card_inserted(self, card):
-        print(f"card inserted {card}")
+        LOGGER.info('card inserted: {card}', card)
         '''
         Handle the scanned tag / retreived UID.
 
         :param str uid: The UID
         '''
-        uid=card
+        uid=card.value
         try:
             action = REGISTRY[str(uid)]
             LOGGER.info('Triggering action of registered tag')
@@ -43,10 +51,13 @@ class RFID(rdm6300.BaseReader):
         TagReader.latest = action
 
     def card_removed(self, card):
-        print(f"card removed {card}")
+        LOGGER.info('card removed: {card}', card)
+        action=Stop
+        action(self.core)
 
     def invalid_card(self, card):
-        print(f"invalid card {card}")
+        LOGGER.warning("[{port}] invalid card detected {card}".format(port=self.port, card=card))
+
 
 class ReadError(Exception):
     '''
@@ -75,7 +86,7 @@ class TagReader(Thread):
         super().__init__()
         self.core       = core
         self.stop_event = stop_event
-        self.rfid       = RFID('/dev/ttyS0')
+        self.rfid       = RFID(core)
 
     def run(self):
         '''
@@ -83,7 +94,7 @@ class TagReader(Thread):
         '''
         rfid      = self.rfid
 
-        while not rfid.stop_event.is_set():
+        while not self.stop_event.is_set():
             received_bytes = rfid.serial.read()
             if received_bytes and len(received_bytes) > 0:
                 recieved_byte = received_bytes[0]
