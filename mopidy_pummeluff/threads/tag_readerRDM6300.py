@@ -11,7 +11,7 @@ from time import time
 from logging import getLogger
 
 import RPi.GPIO as GPIO
-from rdm6300
+import rdm6300
 
 from mopidy_pummeluff.registry import REGISTRY
 from mopidy_pummeluff.actions.base import Action
