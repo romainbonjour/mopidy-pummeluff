@@ -21,6 +21,13 @@ from mopidy_pummeluff.sound import play_sound
 LOGGER = getLogger(__name__)
 
 class RFID(rdm6300.BaseReader):
+    def __init__(self, core, port='/dev/ttyS0', heartbeat_interval=0.5):
+        '''
+        Class constructor.
+        '''
+        super().__init__(self, port, heartbeat_interval):
+        self.core       = core
+    
     def card_inserted(self, card):
         LOGGER.info('card inserted: %s', card.value)
         '''
@@ -78,7 +85,7 @@ class TagReader(Thread):
         super().__init__()
         self.core       = core
         self.stop_event = stop_event
-        self.rfid       = RFID('/dev/ttyS0')
+        self.rfid       = RFID(core)
 
     def run(self):
         '''
@@ -86,7 +93,7 @@ class TagReader(Thread):
         '''
         rfid      = self.rfid
 
-        while not rfid.stop_event.is_set():
+        while not self.stop_event.is_set():
             received_bytes = rfid.serial.read()
             if received_bytes and len(received_bytes) > 0:
                 recieved_byte = received_bytes[0]
