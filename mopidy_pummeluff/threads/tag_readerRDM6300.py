@@ -22,13 +22,13 @@ LOGGER = getLogger(__name__)
 
 class RFID(rdm6300.BaseReader):
     def card_inserted(self, card):
-        LOGGER.info('card inserted: %s', card)
+        LOGGER.info('card inserted: %s', card.value)
         '''
         Handle the scanned tag / retreived UID.
 
         :param str uid: The UID
         '''
-        uid=card
+        uid=card.value
         try:
             action = REGISTRY[str(uid)]
             LOGGER.info('Triggering action of registered tag')
@@ -44,13 +44,12 @@ class RFID(rdm6300.BaseReader):
         TagReader.latest = action
 
     def card_removed(self, card):
-        LOGGER.info('card removed: %s', card)
+        LOGGER.info('card removed: %s', card.value)
         action=Stop
         action(self.core)
 
     def invalid_card(self, card):
         print(f"invalid card {card}")
-        LOGGER.debug('invalid card: %s', card)
 
 class ReadError(Exception):
     '''
