@@ -29,7 +29,7 @@ class RFID(rdm6300.BaseReader):
         self.core       = core
     
     def card_inserted(self, card):
-        LOGGER.info('card inserted: %s', card.value)
+        LOGGER.info('card inserted: {card}', card)
         '''
         Handle the scanned tag / retreived UID.
 
@@ -51,12 +51,13 @@ class RFID(rdm6300.BaseReader):
         TagReader.latest = action
 
     def card_removed(self, card):
-        LOGGER.info('card removed: %s', card.value)
+        LOGGER.info('card removed: {card}', card)
         action=Stop
         action(self.core)
 
     def invalid_card(self, card):
-        print(f"invalid card {card}")
+        LOGGER.warning("[{port}] invalid card detected {card}".format(port=self.port, card=card))
+
 
 class ReadError(Exception):
     '''
