@@ -7,7 +7,7 @@ __all__ = (
 )
 
 from threading import Thread
-from time import time
+from time import time, sleep
 from logging import getLogger
 
 import RPi.GPIO as GPIO
@@ -21,12 +21,15 @@ from mopidy_pummeluff.sound import play_sound
 LOGGER = getLogger(__name__)
 
 class RFID(rdm6300.BaseReader):
-    def __init__(self, core, port='/dev/ttyS0', heartbeat_interval=0.5):
+    def __init__(self, core, port='/dev/ttyS0', heartbeat_interval=1):
         '''
         Class constructor.
         '''
         super().__init__(port, heartbeat_interval)
         self.core       = core
+        if self.serial and self.serial.is_open:
+            self.serial.close()
+            self.serial.open()
     
     def card_inserted(self, card):
         LOGGER.info('card inserted: {card}'.format(card=card))
@@ -49,15 +52,20 @@ class RFID(rdm6300.BaseReader):
 
         action.scanned   = time()
         TagReader.latest = action
+        LOGGER.info('Last card: %s',action.uid)
 
     def card_removed(self, card):
         LOGGER.info('card removed: {card}'.format(card=card))
-        action=Stop
-        action(self.core)
+        #LOGGER.info('card removed: {card}, stopping playback'.format(card=card))
+        #action=Stop
+        #action.execute(self.core)
 
     def invalid_card(self, card):
         LOGGER.warning("[{port}] invalid card detected {card}".format(port=self.port, card=card))
 
+    def tick(self):
+        #sleep(0.1)
+        pass
 
 class ReadError(Exception):
     '''
